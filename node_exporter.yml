@@ -1,0 +1,46 @@
+---
+- hosts: all
+  remote_user: ubuntu
+  tasks:
+    - name: test connection
+      ping:
+    - name: create group
+      group:
+        name: prometheus
+        state: present
+    - name: create user
+      user:
+        name: prometheus
+        group: prometheus
+        createhome: no
+        system: yes
+        state: present
+    - name: create opt directory for prometheus 
+      file: 
+        path: /opt/prometheus 
+        state: directory
+    - name: download node exporter
+      get_url:
+        url: https://github.com/prometheus/node_exporter/releases/download/v0.14.0/node_exporter-0.14.0.linux-amd64.tar.gz
+        dest: /opt/prometheus
+    - name: unarchive node exporter
+      unarchive:
+        remote_src: yes
+        src: /opt/prometheus/node_exporter-0.14.0.linux-amd64.tar.gz
+        dest: /opt/prometheus
+    - name: create symlink to node exporter
+      file:
+        path: /usr/bin/node_exporter
+        state: link
+        src: /opt/prometheus/node_exporter-0.14.0.linux-amd64/node_exporter
+    - name: install unit file to systemd
+      template:
+        src: node_exporter.service
+        dest: /etc/systemd/system/node_exporter.service
+    - name: configure systemd to use service
+      systemd:
+        daemon_reload: yes
+        enabled: yes
+        state: started
+        name: node_exporter.service
+        
