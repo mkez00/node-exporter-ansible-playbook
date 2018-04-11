@@ -2,7 +2,7 @@
 - hosts: all
   remote_user: ubuntu
   vars:
-    node_exporter_version: 0.14.0
+    node_exporter_version: 0.15.2
   tasks:
     - name: test connection
       ping:
