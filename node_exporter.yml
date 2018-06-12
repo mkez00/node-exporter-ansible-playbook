@@ -1,5 +1,5 @@
 ---
-- hosts: all
+- hosts: us
   remote_user: ubuntu
   vars:
     node_exporter_version: 0.15.2
